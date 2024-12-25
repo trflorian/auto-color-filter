@@ -1,48 +1,89 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("images/objects.jpg")
+img = cv2.imread("images/notes3.jpg")
 img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 win_name = "Color Segmentation"
 
 cv2.namedWindow(win_name)
 
+
 class MouseTracker:
-    def __init__(self):
+    def __init__(self, img_hsv, radius=10, tolerance=10):
         self.is_clicked = False
         self.colors = set()
-    
+        self.mouse_pos = (0, 0)
+
+        self.img_hsv = img_hsv
+        self.mask = np.zeros(img_hsv.shape[:2], dtype=np.uint8)
+
+        self.radius = radius
+        self.tolerance = tolerance
+
     def on_mouse_click(self, event, x, y, flags, param):
+        self.mouse_pos = (x, y)
         if event == cv2.EVENT_LBUTTONDOWN:
             self.is_clicked = True
-            self.colors = set()
+            
+            # reset the colors and mask when a new click is detected
+            self.colors = set() 
+            self.mask = np.zeros(self.img_hsv.shape[:2], dtype=np.uint8)
         elif event == cv2.EVENT_LBUTTONUP:
             self.is_clicked = False
-        
-        if self.is_clicked:
-            self.colors.add(tuple([int(p) for p in img_hsv[y, x]]))
 
-tracker = MouseTracker()
+        if self.is_clicked:
+            self.mouse_pos = (x, y)
+
+            # circle maskaround the clicked point
+            img_mask = np.zeros(self.img_hsv.shape[:2], dtype=np.uint8)
+            cv2.circle(img_mask, (x, y), self.radius, 255, -1)
+            
+            img_hsv_points = self.img_hsv[img_mask == 255]
+            if len(img_hsv_points) == 0:
+                return
+            
+            hsv_pixel = img_hsv_points.mean(axis=0)
+            hsv_color = tuple(hsv_pixel.tolist())
+            self.colors.add(hsv_color)
+
+            lower = np.clip(hsv_pixel - self.tolerance, [0, 0, 0], [179, 255, 255])
+            upper = np.clip(hsv_pixel + self.tolerance, [0, 0, 0], [179, 255, 255])
+            mask_for_this_pixel = cv2.inRange(self.img_hsv, lower, upper)
+            self.mask = cv2.bitwise_or(self.mask, mask_for_this_pixel)
+
+            if hsv_pixel[0] + self.tolerance > 179:
+                lower = np.clip(hsv_pixel - self.tolerance, [0, 0, 0], [179, 255, 255])
+                upper = np.clip(hsv_pixel + self.tolerance - 179, [0, 0, 0], [179, 255, 255])
+                mask_for_this_pixel = cv2.inRange(self.img_hsv, lower, upper)
+                self.mask = cv2.bitwise_or(self.mask, mask_for_this_pixel)
+            
+            if hsv_pixel[0] - self.tolerance < 0:
+                lower = np.clip(hsv_pixel - self.tolerance + 179, [0, 0, 0], [179, 255, 255])
+                upper = np.clip(hsv_pixel + self.tolerance, [0, 0, 0], [179, 255, 255])
+                mask_for_this_pixel = cv2.inRange(self.img_hsv, lower, upper)
+                self.mask = cv2.bitwise_or(self.mask, mask_for_this_pixel)
+
+
+
+
+tracker = MouseTracker(img_hsv)
 
 cv2.setMouseCallback(win_name, tracker.on_mouse_click)
 
 while True:
-    mask = np.zeros(img.shape[:2], dtype=np.uint8)
+    img_annotated = img.copy()
 
-    for color in tracker.colors:
-        lower = np.array(color) - 10
-        upper = np.array(color) + 10
-
-        mask = cv2.bitwise_or(mask, cv2.inRange(img_hsv, lower, upper))
-    
+    # Create the combined mask using the optimized function
+    mask = tracker.mask
     mask_bgr = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
-    composite = np.hstack([img, mask_bgr])
+    # Stack the original and mask images side by side
+    composite = np.hstack([img_annotated, mask_bgr])
 
     cv2.imshow(win_name, composite)
 
-    k = cv2.waitKey(1) & 0xFF
+    k = cv2.waitKey(10) & 0xFF
     if k == ord("q"):
         break
 
