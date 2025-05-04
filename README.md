@@ -1,7 +1,7 @@
 # Color Spaces
 
 ![Python](https://img.shields.io/badge/python-3.13-blue.svg)
-![GitHub License](https://img.shields.io/github/license/trflorian/auto-color-filter?style=flat)
+![GitHub License](https://img.shields.io/github/license/trflorian/auto-color-filter)
 
 Undestaning different color spaces is crucial for Computer Vision projects. In this project I explore different examples where switching between color spaces is extremely useful.
 
