@@ -19,18 +19,6 @@ def convert_color_space(input: tuple[int, int, int], mode: int) -> tuple[int, in
     return int(b), int(g), int(r)
 
 
-red_rgb = (200, 120, 0)
-
-red_hsv = convert_color_space(red_rgb, cv2.COLOR_RGB2HSV)
-red_bgr = convert_color_space(red_rgb, cv2.COLOR_RGB2BGR)
-red_rgb_back = convert_color_space(red_hsv, cv2.COLOR_HSV2RGB)
-
-print(f"{red_rgb=}")  # (200, 120, 0)
-print(f"{red_hsv=}")  # (18, 255, 200)
-print(f"{red_bgr=}")  # (0, 120, 200)
-print(f"{red_rgb_back=}")  # (200, 120, 0)
-
-
 def interpolate_color_rgb(
     start_rgb: tuple[int, int, int], end_rgb: tuple[int, int, int], t: float
 ) -> tuple[int, int, int]:
