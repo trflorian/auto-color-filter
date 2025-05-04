@@ -58,7 +58,7 @@ class MouseTracker:
                 self.mask = cv2.bitwise_or(self.mask, mask_for_this_pixel)
 
 
-img = cv2.imread("images/notes3.jpg")
+img = cv2.imread("images/notes.png")
 img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 win_name = "Color Segmentation"
