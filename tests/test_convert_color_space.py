@@ -44,6 +44,4 @@ def test_convert_color_space_back() -> None:
                 output_rgb = convert_color_space(color_hsv, cv2.COLOR_HSV2RGB)
 
                 # Allow for some tolerance in the conversion, up to 15% mis-match!!
-                assert color_rgb == pytest.approx(
-                    output_rgb, rel=0.15
-                ), f"Expected {color_rgb}, but got {output_rgb}"
+                assert color_rgb == pytest.approx(output_rgb, rel=0.15), f"Expected {color_rgb}, but got {output_rgb}"

@@ -1,5 +1,5 @@
-import numpy as np
 import cv2
+import numpy as np
 
 
 def convert_color_space(input: tuple[int, int, int], mode: int) -> tuple[int, int, int]:
@@ -85,12 +85,9 @@ def add_caption(
     text_y = img.shape[0] - 25 + text_size[1] // 2
 
     # add a blac bor to the bottom of the image
-    cv2.rectangle(
-        img, (0, img.shape[0] - 50), (img.shape[1], img.shape[0]), (0, 0, 0), -1
-    )
+    cv2.rectangle(img, (0, img.shape[0] - 50), (img.shape[1], img.shape[0]), (0, 0, 0), -1)
 
     # Add the text to the image
     cv2.putText(img, text, (text_x, text_y), font, font_scale, color, thickness)
 
     return img
-

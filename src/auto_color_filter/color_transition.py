@@ -1,10 +1,10 @@
-import numpy as np
 import cv2
+import numpy as np
 
 from auto_color_filter.utils import (
-    interpolate_color_rgb,
-    interpolate_color_hsv,
     add_caption,
+    interpolate_color_hsv,
+    interpolate_color_rgb,
 )
 
 
@@ -69,7 +69,6 @@ def run_transition_loop(
 
 
 if __name__ == "__main__":
-
     # Run the color transition loop
     run_transition_loop(
         color_start_rgb=(0, 0, 255),  # Blue
